@@ -32,9 +32,8 @@ recovery were multiplication by zero, associativity would yield 2 = 1).
 
 ## Related work / Связанная работа
 
-Вторая часть — **Tagged Delta–Omega Arithmetic** (δ для потери точности,
-ω для переполнения, архитектура «метки по требованию»): репозиторий
-`tagged-delta-omega`.
+Part 2 in preparation. / Вторая часть в подготовке.
+
 
 ## Citation / Цитирование
 
