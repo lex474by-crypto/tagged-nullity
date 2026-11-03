@@ -35,6 +35,8 @@ IEEE 754 propagates NaN/±∞ silently: a long computation chain yields `inf` or
 - **B7.** ⊥(x) + a = ⊥(x) for real a (tag freezes when mixed with ordinary numbers).
 - **B8.** ⊥(x)/0 = ⊥(x).
 
+**Convention (tag scaling under division).** By linearity with B4, we adopt ⊥(x)/b = ⊥(x/b) for real b ≠ 0 (e.g., ⊥(7)/2 = ⊥(3.5)). Division **by** a nullity, in contrast, is *not* an operation of the system: defining a/⊥(x) through ordinary division would silently recover the tag, bypassing the dedicated extract and violating the principle behind B5/B6. The reference implementation rejects such division and requires the caller to apply extract explicitly — the decision to recover a value is thereby made consciously, at a well-defined point (cf. §8, open question 1).
+
 ## 3. The collapse theorem (why recovery cannot be multiplication)
 
 **Theorem.** Any system in which (i) ⊥(x)×0 = x, (ii) multiplication is associative, and (iii) a×0 = 0 for ordinary a, satisfies 2 = 1, hence collapses to the trivial ring.
@@ -76,7 +78,7 @@ See `tagged_nullity.py` (this package). Run `python3 tagged_nullity.py` to execu
 
 ## 8. Open questions
 
-1. Division *by* a nullity, powers, comparisons — currently undefined or partial.
+1. Division *by* a nullity — deliberately excluded from the reference implementation (a silent tag recovery through ordinary division would violate the dedicated-extract principle, B5/B6); whether a safe explicit semantics exists is future work. Powers, comparisons — currently undefined or partial.
 2. Tag propagation under mixed operations (B7 freezes tags) — can a richer algebra keep more provenance?
 3. Hardware realization over IEEE 754 NaN payloads with zero-cost ordinary arithmetic.
 4. What theorems of real analysis survive, and which require the excluded point ∞?
