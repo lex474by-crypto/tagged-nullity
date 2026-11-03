@@ -4,7 +4,8 @@
 
 Автор / Author: **Alexey Dmitriyev** (Lex474.by@gmail.com)
 Лицензия / License: **CC BY 4.0** (text, concept) + **MIT** (code)
-Публикация / Publication: **DOI 10.5281/zenodo.23884949**
+Публикация / Publication: **DOI 10.5281/zenodo.23884948** (latest version / всегда актуальная)
+
 
 ## What is this / Что это
 
@@ -38,4 +39,4 @@ Part 2 in preparation. / Вторая часть в подготовке.
 ## Citation / Цитирование
 
     Dmitriyev, A. (2026). Tagged-Nullity Arithmetic: A Non-Contradictory
-    System for Division by Zero. Zenodo. https://doi.org/10.5281/zenodo.23884949
+    System for Division by Zero. Zenodo. https://doi.org/10.5281/zenodo.23884948
