@@ -32,6 +32,10 @@
 
   def b_div(a, b):    — правило деления (аксиомы B1, B2, B8):
                         x/0 = ⊥(x), но 0/0 = 0.
+                        Деление НА нулити запрещено (это был бы скрытый
+                        возврат метки) — сначала extract. А вот ⊥(x)/b
+                        масштабирует метку: ⊥(7)/2 = ⊥(3.5) — конвенция
+                        линейности, как в B4.
 
   def extract(x):     — «возврат изначального числа»: достать метку
                         из конверта (аксиома B6).
@@ -153,7 +157,7 @@ def b_sub(a, b):
 
 
 def b_div(a, b):
-    """B1, B2, B8."""
+    """B1, B2, B8. Деление НА нулити не определено — сначала extract(b)."""
     if _is_num(b) and b == 0:
         if _is_num(a) and a == 0:
             return 0                                    # B2: 0/0 = 0
@@ -161,8 +165,17 @@ def b_div(a, b):
             return NullB(a.tag, f"({a.origin})/0")      # B8
         return NullB(a, f"{a}/0")                       # B1
     if isinstance(b, NullB):
-        return b_mul(a, b_div(1, b.tag))
+        # Деление НА нулити НЕ является операцией системы: оно молча
+        # «воскрешало» бы метку обычным делением (1/⊥(2) → 0.5) — в обход
+        # extract() и в нарушение принципа B5/B6, согласно которому возврат
+        # значения возможен только выделенной немультипликативной операцией.
+        # См. открытый вопрос 1 в статье. Правильный путь — явная распаковка
+        # делителя: b_div(a, extract(b)).
+        raise ValueError(
+            "деление на нулити не определено: сначала extract(b)"
+        )
     if isinstance(a, NullB):
+        # Конвенция (линейность, как в B4): ⊥(x)/b = ⊥(x/b) для b ≠ 0.
         t = a.tag / b
         return 0 if t == 0 else NullB(t, f"({a.origin})/{b}")
     return a / b
@@ -246,7 +259,21 @@ def test_axioms_b():
     assert extract(b_div(1, 0)) == 1,               "B6: extract(⊥(1)) = 1"
     assert b_add(b_div(5, 0), 10) == NullB(5),      "B7: ⊥(5)+10 = ⊥(5)"
     assert b_div(b_div(7, 0), 0) == NullB(7),       "B8: ⊥(7)/0 = ⊥(7)"
+    # Конвенция: ⊥(x)/b = ⊥(x/b) для b ≠ 0 (линейность, как в B4)
+    assert b_div(b_div(7, 0), 2) == NullB(3.5),     "⊥(7)/2 = ⊥(3.5)"
     print("[OK] Аксиомы системы B (B1–B8)")
+
+
+def test_division_by_nullity_rejected():
+    """Деление НА нулити запрещено: возврат метки — только через extract()."""
+    try:
+        b_div(1, b_div(2, 0))                       # 1 / ⊥(2)
+        assert False, "1/⊥(2) не должно молча возвращать 0.5 (обход extract)"
+    except ValueError:
+        pass
+    # Правильный путь: явная распаковка делителя — решение принимает человек
+    assert b_div(1, extract(b_div(2, 0))) == 0.5
+    print("[OK] Деление на нулити отклонено; extract(b) — единственный путь возврата")
 
 
 def test_b_no_collapse():
@@ -311,6 +338,7 @@ if __name__ == "__main__":
     print("ПОМЕЧЕННАЯ АРИФМЕТИКА ДЕЛЕНИЯ НА НОЛЬ — протокол испытаний")
     print("=" * 70)
     test_axioms_b()
+    test_division_by_nullity_rejected()
     test_b_no_collapse()
     test_debugging_b()
     test_collapse_c()
